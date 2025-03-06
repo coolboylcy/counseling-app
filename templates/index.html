@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>智能文档分析助手</title>
-    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         * {
@@ -14,191 +14,157 @@
         }
 
         body {
-            font-family: 'ZCOOL KuaiLe', cursive;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #ffffff;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 40px 20px;
+            color: #1d1d1f;
         }
 
         .container {
             max-width: 800px;
             width: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-            padding: 20px;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            padding: 40px;
             margin-top: 20px;
         }
 
         h1 {
-            color: #2c3e50;
+            color: #1d1d1f;
             text-align: center;
-            margin-bottom: 30px;
-            font-size: clamp(1.5em, 5vw, 2.5em);
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+            font-size: clamp(1.8em, 5vw, 2.5em);
+            font-weight: 600;
+            letter-spacing: -0.02em;
         }
 
         .input-section {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
 
         .url-input {
             width: 100%;
-            padding: 15px;
-            border: 2px solid #3498db;
-            border-radius: 10px;
+            padding: 16px 20px;
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
             font-size: 16px;
-            margin-bottom: 10px;
-            font-family: 'ZCOOL KuaiLe', cursive;
+            margin-bottom: 16px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: #f5f5f7;
         }
 
         .url-input:focus {
             outline: none;
-            border-color: #2980b9;
-            box-shadow: 0 0 5px rgba(41, 128, 185, 0.3);
+            border-color: #0071e3;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
         }
 
         .analyze-button {
             width: 100%;
-            padding: 15px;
-            background: #3498db;
+            padding: 16px;
+            background: #0071e3;
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 16px;
+            font-weight: 500;
             cursor: pointer;
-            transition: background 0.3s;
-            font-family: 'ZCOOL KuaiLe', cursive;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
         }
 
         .analyze-button:hover {
-            background: #2980b9;
+            background: #0077ed;
+            transform: translateY(-1px);
+        }
+
+        .analyze-button:active {
+            transform: translateY(0);
         }
 
         .result-section {
             display: none;
-            margin-top: 20px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border: 1px solid #e9ecef;
+            margin-top: 30px;
+            padding: 30px;
+            background: #f5f5f7;
+            border-radius: 16px;
         }
 
         .document-info {
-            margin-bottom: 15px;
-            color: #6c757d;
+            margin-bottom: 20px;
+            color: #86868b;
             font-size: 14px;
+            font-weight: 500;
         }
 
         .premium-section {
-            margin-top: 20px;
-            padding: 15px;
-            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-            border-radius: 10px;
+            margin-top: 30px;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 16px;
             text-align: center;
             position: relative;
-            overflow: hidden;
-        }
-
-        .premium-section::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                45deg,
-                transparent,
-                rgba(255, 255, 255, 0.3),
-                transparent
-            );
-            transform: rotate(45deg);
-            animation: shine 3s infinite;
-        }
-
-        @keyframes shine {
-            0% { transform: translateX(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) rotate(45deg); }
+            border: 1px solid #e5e5e5;
         }
 
         .premium-button {
-            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            background: #0071e3;
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
+            padding: 14px 28px;
+            border-radius: 12px;
             cursor: pointer;
-            font-family: 'ZCOOL KuaiLe', cursive;
+            font-family: 'Inter', sans-serif;
             font-size: 16px;
+            font-weight: 500;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
         }
 
         .premium-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+            background: #0077ed;
+            transform: translateY(-1px);
         }
 
         .premium-button:active {
-            transform: translateY(1px);
-        }
-
-        .premium-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255, 255, 255, 0.2),
-                transparent
-            );
-            transition: 0.5s;
-        }
-
-        .premium-button:hover::before {
-            left: 100%;
+            transform: translateY(0);
         }
 
         .premium-content {
             display: none;
-            margin-top: 20px;
-            padding: 20px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 30px;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e5e5e5;
         }
 
         .premium-content h3 {
-            color: #ff6b6b;
-            margin-bottom: 15px;
-        }
-
-        .premium-content p {
-            margin: 10px 0;
-            line-height: 1.6;
+            color: #1d1d1f;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 1.4em;
         }
 
         .premium-content .analogy {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            border-left: 4px solid #ff6b6b;
+            background: #f5f5f7;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 3px solid #0071e3;
         }
 
         .summary-content {
             line-height: 1.6;
-            color: #2c3e50;
+            color: #1d1d1f;
         }
 
         /* Markdown 样式 */
@@ -208,103 +174,90 @@
         .summary-content h4,
         .summary-content h5,
         .summary-content h6 {
-            color: #2c3e50;
-            margin: 1em 0 0.5em;
-            font-family: 'ZCOOL KuaiLe', cursive;
+            color: #1d1d1f;
+            margin: 1.5em 0 0.8em;
+            font-weight: 600;
+            letter-spacing: -0.02em;
         }
 
-        .summary-content h1 { font-size: 1.8em; }
-        .summary-content h2 { font-size: 1.5em; }
+        .summary-content h1 { font-size: 2em; }
+        .summary-content h2 { font-size: 1.6em; }
         .summary-content h3 { font-size: 1.3em; }
 
         .summary-content p {
-            margin: 0.8em 0;
+            margin: 1em 0;
+            color: #424245;
         }
 
         .summary-content ul,
         .summary-content ol {
-            margin: 0.8em 0;
+            margin: 1em 0;
             padding-left: 2em;
+            color: #424245;
         }
 
         .summary-content li {
-            margin: 0.3em 0;
+            margin: 0.5em 0;
         }
 
         .summary-content code {
-            background: #f1f1f1;
+            background: #f5f5f7;
             padding: 0.2em 0.4em;
-            border-radius: 3px;
-            font-family: monospace;
+            border-radius: 4px;
+            font-family: 'SF Mono', 'Menlo', monospace;
+            font-size: 0.9em;
         }
 
         .summary-content pre {
-            background: #f1f1f1;
-            padding: 1em;
-            border-radius: 5px;
+            background: #f5f5f7;
+            padding: 1.2em;
+            border-radius: 12px;
             overflow-x: auto;
-            margin: 1em 0;
+            margin: 1.2em 0;
         }
 
         .summary-content blockquote {
-            border-left: 4px solid #3498db;
-            margin: 1em 0;
-            padding-left: 1em;
-            color: #666;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            margin: 20px 0;
+            border-left: 3px solid #0071e3;
+            margin: 1.2em 0;
+            padding-left: 1.2em;
+            color: #424245;
         }
 
         .loading-container {
             display: none;
             text-align: center;
-            margin: 20px 0;
+            margin: 30px 0;
         }
 
         .loading-progress {
             width: 100%;
-            height: 20px;
-            background: #f0f0f0;
-            border-radius: 10px;
+            height: 4px;
+            background: #e5e5e5;
+            border-radius: 2px;
             overflow: hidden;
-            margin: 10px 0;
+            margin: 20px 0;
         }
 
         .progress-bar {
             width: 0%;
             height: 100%;
-            background: linear-gradient(90deg, #3498db, #2ecc71);
-            border-radius: 10px;
+            background: #0071e3;
+            border-radius: 2px;
             transition: width 0.3s ease;
         }
 
         .loading-status {
-            color: #3498db;
+            color: #1d1d1f;
             font-size: 16px;
-            margin: 10px 0;
-        }
-
-        .loading-status span {
-            display: inline-block;
-            animation: bounce 1s infinite;
-        }
-
-        .loading-status span:nth-child(2) { animation-delay: 0.2s; }
-        .loading-status span:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+            font-weight: 500;
+            margin: 15px 0;
         }
 
         .loading-steps {
             display: flex;
-            justify-content: space-around;
-            margin: 15px 0;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 0 20px;
         }
 
         .loading-step {
@@ -312,16 +265,20 @@
             flex: 1;
             padding: 10px;
             position: relative;
+            color: #86868b;
+            font-size: 14px;
+            font-weight: 500;
         }
 
         .loading-step::after {
-            content: '→';
+            content: '';
             position: absolute;
-            right: -10px;
+            right: -50%;
             top: 50%;
             transform: translateY(-50%);
-            color: #3498db;
-            opacity: 0.5;
+            width: 100%;
+            height: 2px;
+            background: #e5e5e5;
         }
 
         .loading-step:last-child::after {
@@ -329,47 +286,59 @@
         }
 
         .loading-step.active {
-            color: #3498db;
-            font-weight: bold;
+            color: #0071e3;
         }
 
         .loading-step.completed {
-            color: #2ecc71;
+            color: #0071e3;
         }
 
         .error-message {
             display: none;
-            color: #e74c3c;
+            color: #ff3b30;
             text-align: center;
-            margin: 10px 0;
-            padding: 10px;
-            background: #fde8e8;
-            border-radius: 5px;
-        }
-
-        @keyframes popOut {
-            0% { transform: translate(-50%, -50%) scale(1); }
-            100% { transform: translate(-50%, -50%) scale(0); }
+            margin: 15px 0;
+            padding: 15px;
+            background: #fff1f0;
+            border-radius: 12px;
+            font-weight: 500;
         }
 
         @media (max-width: 480px) {
+            body {
+                padding: 20px 10px;
+            }
+
             .container {
-                padding: 15px;
-                margin-top: 10px;
+                padding: 20px;
+                border-radius: 16px;
             }
 
             .url-input, .analyze-button {
-                padding: 12px;
-                font-size: 14px;
+                padding: 14px;
+                font-size: 15px;
+            }
+
+            .loading-steps {
+                flex-direction: column;
+                padding: 0;
+            }
+
+            .loading-step {
+                margin: 10px 0;
+            }
+
+            .loading-step::after {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📚 智能文档分析助手</h1>
+        <h1>智能文档分析助手</h1>
         <div class="input-section">
-            <input type="text" id="documentUrl" class="url-input" placeholder="请输入文档链接（支持PDF、Markdown、HTML等格式）">
+            <input type="text" id="documentUrl" class="url-input" placeholder="输入文档链接（支持 PDF、Markdown、HTML 等格式）">
             <button onclick="analyzeDocument()" class="analyze-button">开始分析</button>
         </div>
         <div class="loading" id="loading">
@@ -378,9 +347,7 @@
                     <div class="progress-bar" id="progressBar"></div>
                 </div>
                 <div class="loading-status" id="loadingStatus">
-                    <span>正在</span>
-                    <span>分析</span>
-                    <span>文档</span>
+                    正在分析文档
                 </div>
                 <div class="loading-steps">
                     <div class="loading-step" id="step1">提取内容</div>
@@ -395,10 +362,10 @@
             <div class="document-info" id="documentInfo"></div>
             <div class="summary-content" id="summaryContent"></div>
             <div class="premium-section">
-                <button onclick="unlockPremium()" class="premium-button">🔓 解锁深入解析</button>
+                <button onclick="unlockPremium()" class="premium-button">解锁深入解析</button>
             </div>
             <div class="premium-content" id="premiumContent">
-                <h3>🤖 AI 深入解析</h3>
+                <h3>AI 深入解析</h3>
                 <div id="analogyContent"></div>
             </div>
         </div>
