@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>专业心理咨询</title>
+    <title>智能文档分析助手</title>
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
     <style>
         * {
@@ -14,12 +14,12 @@
 
         body {
             font-family: 'ZCOOL KuaiLe', cursive;
-            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 10px;
+            padding: 20px;
         }
 
         .container {
@@ -28,92 +28,81 @@
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-            padding: 15px;
-            margin-top: 10px;
-            position: relative;
+            padding: 20px;
+            margin-top: 20px;
         }
 
         h1 {
-            color: #26a69a;
+            color: #2c3e50;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             font-size: clamp(1.5em, 5vw, 2.5em);
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .chat-container {
-            height: calc(100vh - 300px);
-            min-height: 300px;
-            max-height: 500px;
-            overflow-y: auto;
+        .input-section {
+            margin-bottom: 20px;
+        }
+
+        .url-input {
+            width: 100%;
             padding: 15px;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 15px;
-            margin-bottom: 15px;
-            border: 1px solid #e0e0e0;
-        }
-
-        .message {
-            margin-bottom: 12px;
-            padding: 10px 15px;
-            border-radius: 15px;
-            max-width: 85%;
-            word-wrap: break-word;
-            line-height: 1.5;
-            font-size: clamp(14px, 3vw, 16px);
-        }
-
-        .user-message {
-            background: #26a69a;
-            color: white;
-            margin-left: auto;
-        }
-
-        .ai-message {
-            background: #f5f5f5;
-            color: #333;
-            border: 1px solid #e0e0e0;
-        }
-
-        .input-container {
-            display: flex;
-            gap: 8px;
-            padding: 0 5px;
-        }
-
-        input[type="text"] {
-            flex: 1;
-            padding: 10px 15px;
-            border: 2px solid #26a69a;
-            border-radius: 25px;
-            font-size: clamp(14px, 3vw, 16px);
-            outline: none;
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
             font-family: 'ZCOOL KuaiLe', cursive;
         }
 
-        button {
-            padding: 10px 20px;
-            background: #26a69a;
+        .url-input:focus {
+            outline: none;
+            border-color: #2980b9;
+            box-shadow: 0 0 5px rgba(41, 128, 185, 0.3);
+        }
+
+        .analyze-button {
+            width: 100%;
+            padding: 15px;
+            background: #3498db;
             color: white;
             border: none;
-            border-radius: 25px;
+            border-radius: 10px;
+            font-size: 16px;
             cursor: pointer;
-            font-size: clamp(14px, 3vw, 16px);
+            transition: background 0.3s;
             font-family: 'ZCOOL KuaiLe', cursive;
-            transition: transform 0.2s, background 0.2s;
-            white-space: nowrap;
         }
 
-        button:hover {
-            transform: scale(1.05);
-            background: #00897b;
+        .analyze-button:hover {
+            background: #2980b9;
+        }
+
+        .result-section {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .document-info {
+            margin-bottom: 15px;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .summary-content {
+            white-space: pre-wrap;
+            line-height: 1.6;
+            color: #2c3e50;
         }
 
         .loading {
             display: none;
             text-align: center;
-            margin: 10px 0;
-            color: #26a69a;
+            margin: 20px 0;
+            color: #3498db;
         }
 
         .loading::after {
@@ -127,252 +116,117 @@
             66% { content: '...'; }
         }
 
-        .disclaimer {
-            text-align: center;
-            font-size: clamp(12px, 2.5vw, 14px);
-            color: #666;
-            margin-top: 15px;
-            padding: 10px;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .sponsor-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #ff6b6b;
-            color: white;
-            padding: 12px 25px;
-            border-radius: 30px;
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            z-index: 1000;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .sponsor-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
-        }
-
-        .sponsor-button i {
-            font-size: 20px;
-        }
-
-        .payment-modal {
+        .error-message {
             display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1001;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .payment-content {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 400px;
+            color: #e74c3c;
             text-align: center;
-            position: relative;
-        }
-
-        .payment-options {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .payment-option {
-            padding: 15px;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .qr-code {
-            width: 200px;
-            height: 200px;
-            border-radius: 10px;
             margin: 10px 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .payment-title {
-            font-size: 18px;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        .payment-amount {
-            font-size: 14px;
-            color: #666;
-            margin-top: 5px;
-        }
-
-        .payment-tip {
-            font-size: 12px;
-            color: #999;
-            margin-top: 5px;
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #666;
+            padding: 10px;
+            background: #fde8e8;
+            border-radius: 5px;
         }
 
         @media (max-width: 480px) {
             .container {
-                padding: 10px;
-                margin-top: 5px;
+                padding: 15px;
+                margin-top: 10px;
             }
 
-            .chat-container {
-                height: calc(100vh - 250px);
-                min-height: 250px;
-            }
-
-            .message {
-                max-width: 90%;
-            }
-
-            .input-container {
-                padding: 0 2px;
-            }
-
-            .sponsor-button {
-                bottom: 15px;
-                right: 15px;
-                padding: 10px 20px;
+            .url-input, .analyze-button {
+                padding: 12px;
+                font-size: 14px;
             }
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
-        <h1>✨ 专业心理咨询 ✨</h1>
-        <div class="chat-container" id="chatContainer"></div>
-        <div class="loading" id="loading">咨询师正在思考</div>
-        <div class="input-container">
-            <input type="text" id="userInput" placeholder="请描述您的问题或困扰...">
-            <button onclick="sendMessage()">发送</button>
+        <h1>📚 智能文档分析助手</h1>
+        <div class="input-section">
+            <input type="text" id="documentUrl" class="url-input" placeholder="请输入文档链接（支持PDF、Markdown、HTML等格式）">
+            <button onclick="analyzeDocument()" class="analyze-button">开始分析</button>
         </div>
-        <div class="disclaimer">
-            温馨提示：本服务仅供参考，如有严重心理问题请及时寻求线下专业帮助。
-        </div>
-    </div>
-
-    <button class="sponsor-button" onclick="showPaymentModal()">
-        <i class="fas fa-heart"></i>
-        赞助支持
-    </button>
-
-    <div class="payment-modal" id="paymentModal">
-        <div class="payment-content">
-            <button class="close-modal" onclick="hidePaymentModal()">&times;</button>
-            <h2 style="color: #26a69a; margin-bottom: 20px;">感谢您的支持</h2>
-            <p style="margin-bottom: 20px;">请使用以下方式扫码支付</p>
-            <div class="payment-options">
-                <div class="payment-option">
-                    <div class="payment-title">微信支付</div>
-                    <img src="/static/images/processed/wechat-qr.jpg" alt="微信支付" class="qr-code">
-                    <div class="payment-amount">¥1.00起</div>
-                    <div class="payment-tip">请使用微信扫描二维码</div>
-                </div>
-                <div class="payment-option">
-                    <div class="payment-title">支付宝</div>
-                    <img src="/static/images/processed/alipay-qr.jpg" alt="支付宝" class="qr-code">
-                    <div class="payment-amount">¥1.00起</div>
-                    <div class="payment-tip">请使用支付宝扫描二维码</div>
-                </div>
-            </div>
+        <div class="loading" id="loading">正在分析文档，请稍候</div>
+        <div class="error-message" id="errorMessage"></div>
+        <div class="result-section" id="resultSection">
+            <div class="document-info" id="documentInfo"></div>
+            <div class="summary-content" id="summaryContent"></div>
         </div>
     </div>
 
     <script>
-        const chatContainer = document.getElementById('chatContainer');
-        const userInput = document.getElementById('userInput');
+        const documentUrl = document.getElementById('documentUrl');
         const loading = document.getElementById('loading');
-        const paymentModal = document.getElementById('paymentModal');
+        const errorMessage = document.getElementById('errorMessage');
+        const resultSection = document.getElementById('resultSection');
+        const documentInfo = document.getElementById('documentInfo');
+        const summaryContent = document.getElementById('summaryContent');
 
-        // 添加欢迎消息
-        window.onload = function() {
-            addMessage("您好，我是您的专业心理咨询师。请告诉我您有什么困扰，我会认真倾听并为您提供专业的建议。", false);
-        };
+        async function analyzeDocument() {
+            const url = documentUrl.value.trim();
+            if (!url) {
+                showError('请输入文档链接');
+                return;
+            }
 
-        function addMessage(message, isUser) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
-            messageDiv.textContent = message;
-            chatContainer.appendChild(messageDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        async function sendMessage() {
-            const message = userInput.value.trim();
-            if (!message) return;
-
-            addMessage(message, true);
-            userInput.value = '';
-            loading.style.display = 'block';
+            // 重置界面
+            hideError();
+            hideResult();
+            showLoading();
 
             try {
-                const response = await fetch('/chat', {
+                const response = await fetch('/analyze', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ message }),
+                    body: JSON.stringify({ url }),
                 });
 
                 const data = await response.json();
                 if (data.error) {
-                    addMessage('抱歉，系统出现了一些问题，请稍后重试。', false);
+                    showError(data.error);
                 } else {
-                    addMessage(data.response, false);
+                    showResult(data);
                 }
             } catch (error) {
-                addMessage('抱歉，系统暂时无法响应，请稍后重试。', false);
+                showError('分析过程中出现错误，请稍后重试');
             } finally {
-                loading.style.display = 'none';
+                hideLoading();
             }
         }
 
-        userInput.addEventListener('keypress', (e) => {
+        function showLoading() {
+            loading.style.display = 'block';
+        }
+
+        function hideLoading() {
+            loading.style.display = 'none';
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+
+        function showResult(data) {
+            documentInfo.textContent = `文档类型：${data.document_type}`;
+            summaryContent.textContent = data.summary;
+            resultSection.style.display = 'block';
+        }
+
+        function hideResult() {
+            resultSection.style.display = 'none';
+        }
+
+        // 支持回车键提交
+        documentUrl.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-
-        function showPaymentModal() {
-            paymentModal.style.display = 'flex';
-        }
-
-        function hidePaymentModal() {
-            paymentModal.style.display = 'none';
-        }
-
-        // 点击模态框外部关闭
-        paymentModal.addEventListener('click', (e) => {
-            if (e.target === paymentModal) {
-                hidePaymentModal();
+                analyzeDocument();
             }
         });
     </script>
