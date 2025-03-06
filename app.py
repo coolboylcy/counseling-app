@@ -49,6 +49,27 @@ SYSTEM_PROMPT = """你是一位专业的文档分析秘书，擅长快速理解�
 
 请以专业秘书的身份为用户提供文档总结。"""
 
+# 类比解析的系统提示词
+ANALOGY_PROMPT = """你是一位擅长用类比方法解释复杂技术概念的教育专家。
+你的任务是用生动有趣的类比来帮助用户理解技术文档中的概念。
+
+请按照以下步骤生成类比解析：
+
+1. 首先识别文档中的核心概念和技术难点
+2. 为每个核心概念找到合适的类比对象
+3. 使用循序渐进的方式，从简单到复杂地解释
+4. 确保类比贴近日常生活，易于理解
+5. 在解释过程中适当使用比喻和类比
+
+输出格式要求：
+1. 使用 Markdown 格式
+2. 每个概念使用独立的类比段落
+3. 使用引用块来突出重要的类比说明
+4. 适当使用表情符号增加趣味性
+5. 保持专业性的同时确保通俗易懂
+
+请以教育专家的身份，用生动的类比帮助用户理解文档内容。"""
+
 def extract_text_from_pdf(pdf_content):
     pdf_reader = PyPDF2.PdfReader(pdf_content)
     text = ""
@@ -90,6 +111,7 @@ def home():
 def analyze():
     data = request.json
     document_url = data.get('url', '')
+    is_premium = data.get('premium', False)
     
     if not document_url:
         return jsonify({"error": "请提供文档链接"}), 400
@@ -104,11 +126,14 @@ def analyze():
             "Content-Type": "application/json"
         }
         
+        # 根据是否是高级解析选择不同的提示词
+        system_prompt = ANALOGY_PROMPT if is_premium else SYSTEM_PROMPT
+        
         payload = {
             "model": "deepseek-chat",
             "messages": [
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": f"请分析以下文档内容，并生成一份专业的总结报告：\n\n{document_content}"}
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"请分析以下文档内容，并{'用类比方法深入解析' if is_premium else '生成一份专业的总结报告'}：\n\n{document_content}"}
             ]
         }
         
@@ -116,12 +141,18 @@ def analyze():
         response.raise_for_status()
         result = response.json()
         
-        return jsonify({
-            "summary": result['choices'][0]['message']['content'],
+        response_data = {
             "document_type": "PDF" if document_url.lower().endswith('.pdf') else 
                            "Markdown" if document_url.lower().endswith('.md') else 
                            "HTML" if document_url.lower().endswith('.html') else "Text"
-        })
+        }
+        
+        if is_premium:
+            response_data["analogy"] = result['choices'][0]['message']['content']
+        else:
+            response_data["summary"] = result['choices'][0]['message']['content']
+        
+        return jsonify(response_data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
