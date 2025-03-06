@@ -398,6 +398,7 @@
             hideResult();
             hidePremiumContent();
             showLoading();
+            startLoadingAnimation();
 
             try {
                 const response = await fetch('/analyze', {
@@ -416,17 +417,21 @@
                 }
             } catch (error) {
                 showError('分析过程中出现错误，请稍后重试');
+                console.error('Error:', error);
             } finally {
                 hideLoading();
+                stopLoadingAnimation();
             }
         }
 
         function showLoading() {
             loading.style.display = 'block';
+            document.getElementById('loadingContainer').style.display = 'block';
         }
 
         function hideLoading() {
             loading.style.display = 'none';
+            document.getElementById('loadingContainer').style.display = 'none';
         }
 
         function showError(message) {
@@ -465,16 +470,16 @@
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+                background: #0071e3;
                 color: white;
                 padding: 20px 40px;
-                border-radius: 10px;
+                border-radius: 12px;
                 font-size: 18px;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+                box-shadow: 0 4px 20px rgba(0,0,0,0.1);
                 z-index: 1000;
                 animation: popIn 0.5s ease;
             `;
-            alertBox.textContent = '🎉 测试期间功能免费开放！';
+            alertBox.textContent = '测试期间功能免费开放！';
             document.body.appendChild(alertBox);
             
             setTimeout(() => {
@@ -510,6 +515,7 @@
                 }
             } catch (error) {
                 showError('生成深入解析时出现错误，请稍后重试');
+                console.error('Error:', error);
             } finally {
                 hideLoading();
                 stopLoadingAnimation();
@@ -517,14 +523,11 @@
         }
 
         function startLoadingAnimation() {
-            const container = document.getElementById('loadingContainer');
             const progressBar = document.getElementById('progressBar');
             const steps = document.querySelectorAll('.loading-step');
             let progress = 0;
             let currentStep = 0;
 
-            container.style.display = 'block';
-            
             const interval = setInterval(() => {
                 progress += Math.random() * 2;
                 if (progress > 100) progress = 100;
@@ -553,7 +556,6 @@
                 clearInterval(window.loadingInterval);
                 window.loadingInterval = null;
             }
-            document.getElementById('loadingContainer').style.display = 'none';
             document.getElementById('progressBar').style.width = '0%';
             document.querySelectorAll('.loading-step').forEach(step => {
                 step.classList.remove('active', 'completed');
