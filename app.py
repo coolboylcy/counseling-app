@@ -11,65 +11,6 @@ from urllib.parse import urlparse
 app = Flask(__name__, static_folder='static')
 load_dotenv()
 
-DEEPSEEK_API_KEY = os.getenv('DEEPSEEK_API_KEY', "sk-b225609809eb45da981394d494dafe3d")
-DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions"
-
-# 系统提示词，让AI扮演专业文档分析秘书
-SYSTEM_PROMPT = """你是一位专业的文档分析秘书，擅长快速理解和总结各类技术文档。
-你的工作风格清晰、专业，善于提取文档的核心内容和关键信息。
-
-请使用 Markdown 格式生成总结报告，包含以下部分：
-
-# 文档概述
-简要介绍文档的主要内容和目的。
-
-## 核心要点
-列出文档中最重要和关键的信息点。
-
-### 技术细节
-- 重要的技术概念和实现细节
-- 关键的技术参数和配置
-- 核心功能说明
-
-### 创新亮点
-- 文档中的创新点
-- 独特的解决方案
-- 重要的突破
-
-## 总结
-对文档进行整体评价和总结。
-
-注意：
-1. 使用 Markdown 的标题层级（#、##、###）来组织内容
-2. 使用列表（- 或 1.）来列举要点
-3. 使用引用（>）来突出重要内容
-4. 使用代码块（```）来展示代码示例
-5. 保持客观专业的语气
-6. 确保内容简洁明了，重点突出
-
-请以专业秘书的身份为用户提供文档总结。"""
-
-# 类比解析的系统提示词
-ANALOGY_PROMPT = """你是一位擅长用类比方法解释复杂技术概念的教育专家。
-你的任务是用生动有趣的类比来帮助用户理解技术文档中的概念。
-
-请按照以下步骤生成类比解析：
-
-1. 首先识别文档中的核心概念和技术难点
-2. 为每个核心概念找到合适的类比对象
-3. 使用循序渐进的方式，从简单到复杂地解释
-4. 确保类比贴近日常生活，易于理解
-5. 在解释过程中适当使用比喻和类比
-
-输出格式要求：
-1. 使用 Markdown 格式
-2. 每个概念使用独立的类比段落
-3. 使用引用块来突出重要的类比说明
-4. 适当使用表情符号增加趣味性
-5. 保持专业性的同时确保通俗易懂
-
-请以教育专家的身份，用生动的类比帮助用户理解文档内容。"""
-
 def extract_text_from_pdf(pdf_content):
     pdf_reader = PyPDF2.PdfReader(pdf_content)
     text = ""
@@ -120,27 +61,7 @@ def analyze():
         # 获取文档内容
         document_content = fetch_document_content(document_url)
         
-        # 准备发送给 AI 的消息
-        headers = {
-            "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
-            "Content-Type": "application/json"
-        }
-        
-        # 根据是否是高级解析选择不同的提示词
-        system_prompt = ANALOGY_PROMPT if is_premium else SYSTEM_PROMPT
-        
-        payload = {
-            "model": "deepseek-chat",
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"请分析以下文档内容，并{'用类比方法深入解析' if is_premium else '生成一份专业的总结报告'}：\n\n{document_content}"}
-            ]
-        }
-        
-        response = requests.post(DEEPSEEK_API_URL, headers=headers, json=payload)
-        response.raise_for_status()
-        result = response.json()
-        
+        # 模拟响应数据
         response_data = {
             "document_type": "PDF" if document_url.lower().endswith('.pdf') else 
                            "Markdown" if document_url.lower().endswith('.md') else 
@@ -148,9 +69,47 @@ def analyze():
         }
         
         if is_premium:
-            response_data["analogy"] = result['choices'][0]['message']['content']
+            response_data["analogy"] = """# 深入解析示例
+
+## 核心概念类比
+
+### 1. 文档处理系统
+就像图书馆的管理系统一样，我们的文档分析系统：
+- 接收各种格式的文档（就像图书馆接收不同语言的书籍）
+- 提取关键信息（就像图书管理员整理书籍信息）
+- 生成结构化摘要（就像制作图书目录）
+
+### 2. 文本分析过程
+这个过程可以类比为：
+- 提取内容：就像厨师准备食材
+- 理解核心：就像厨师理解菜谱
+- 生成类比：就像厨师创新菜品
+- 优化输出：就像摆盘和装饰
+
+> 通过这样的类比，我们可以更好地理解文档分析系统的工作原理。"""
         else:
-            response_data["summary"] = result['choices'][0]['message']['content']
+            response_data["summary"] = """# 文档分析示例
+
+## 文档概述
+这是一个示例文档分析结果，展示了系统的基本功能。
+
+## 核心要点
+- 支持多种文档格式
+- 智能提取关键信息
+- 生成结构化摘要
+
+### 技术细节
+- 文档格式识别
+- 文本内容提取
+- 信息结构化处理
+
+### 创新亮点
+- 智能分析算法
+- 多格式支持
+- 实时处理能力
+
+## 总结
+这是一个功能强大的文档分析系统，能够帮助用户快速理解和总结各类文档。"""
         
         return jsonify(response_data)
     except Exception as e:
