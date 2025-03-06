@@ -99,22 +99,74 @@
             background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
             border-radius: 10px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .premium-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
         }
 
         .premium-button {
-            background: #ff6b6b;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 25px;
+            border-radius: 25px;
             cursor: pointer;
             font-family: 'ZCOOL KuaiLe', cursive;
             font-size: 16px;
-            transition: transform 0.2s;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
         }
 
         .premium-button:hover {
-            transform: scale(1.05);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .premium-button:active {
+            transform: translateY(1px);
+        }
+
+        .premium-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .premium-button:hover::before {
+            left: 100%;
         }
 
         .premium-content {
@@ -205,18 +257,84 @@
             display: none;
             text-align: center;
             margin: 20px 0;
+        }
+
+        .loading-container {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .loading-progress {
+            width: 100%;
+            height: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .loading-status {
             color: #3498db;
+            font-size: 16px;
+            margin: 10px 0;
         }
 
-        .loading::after {
-            content: '...';
-            animation: loading 1.5s infinite;
+        .loading-status span {
+            display: inline-block;
+            animation: bounce 1s infinite;
         }
 
-        @keyframes loading {
-            0% { content: '.'; }
-            33% { content: '..'; }
-            66% { content: '...'; }
+        .loading-status span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-status span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .loading-steps {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+        }
+
+        .loading-step {
+            text-align: center;
+            flex: 1;
+            padding: 10px;
+            position: relative;
+        }
+
+        .loading-step::after {
+            content: '→';
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3498db;
+            opacity: 0.5;
+        }
+
+        .loading-step:last-child::after {
+            display: none;
+        }
+
+        .loading-step.active {
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        .loading-step.completed {
+            color: #2ecc71;
         }
 
         .error-message {
@@ -227,6 +345,11 @@
             padding: 10px;
             background: #fde8e8;
             border-radius: 5px;
+        }
+
+        @keyframes popOut {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            100% { transform: translate(-50%, -50%) scale(0); }
         }
 
         @media (max-width: 480px) {
@@ -249,7 +372,24 @@
             <input type="text" id="documentUrl" class="url-input" placeholder="请输入文档链接（支持PDF、Markdown、HTML等格式）">
             <button onclick="analyzeDocument()" class="analyze-button">开始分析</button>
         </div>
-        <div class="loading" id="loading">正在分析文档，请稍候</div>
+        <div class="loading" id="loading">
+            <div class="loading-container" id="loadingContainer">
+                <div class="loading-progress">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="loading-status" id="loadingStatus">
+                    <span>正在</span>
+                    <span>分析</span>
+                    <span>文档</span>
+                </div>
+                <div class="loading-steps">
+                    <div class="loading-step" id="step1">提取内容</div>
+                    <div class="loading-step" id="step2">理解核心</div>
+                    <div class="loading-step" id="step3">生成类比</div>
+                    <div class="loading-step" id="step4">优化输出</div>
+                </div>
+            </div>
+        </div>
         <div class="error-message" id="errorMessage"></div>
         <div class="result-section" id="resultSection">
             <div class="document-info" id="documentInfo"></div>
@@ -352,13 +492,36 @@
 
         async function unlockPremium() {
             // 显示测试期间免费提示
-            alert('测试期间功能免费开放！');
+            const alertBox = document.createElement('div');
+            alertBox.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+                color: white;
+                padding: 20px 40px;
+                border-radius: 10px;
+                font-size: 18px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+                z-index: 1000;
+                animation: popIn 0.5s ease;
+            `;
+            alertBox.textContent = '🎉 测试期间功能免费开放！';
+            document.body.appendChild(alertBox);
             
+            setTimeout(() => {
+                alertBox.style.animation = 'popOut 0.5s ease';
+                setTimeout(() => alertBox.remove(), 500);
+            }, 2000);
+
             // 获取当前文档内容
             const url = documentUrl.value.trim();
             if (!url) return;
 
             showLoading();
+            startLoadingAnimation();
+            
             try {
                 const response = await fetch('/analyze', {
                     method: 'POST',
@@ -382,7 +545,58 @@
                 showError('生成深入解析时出现错误，请稍后重试');
             } finally {
                 hideLoading();
+                stopLoadingAnimation();
             }
+        }
+
+        function startLoadingAnimation() {
+            const container = document.getElementById('loadingContainer');
+            const progressBar = document.getElementById('progressBar');
+            const steps = document.querySelectorAll('.loading-step');
+            let progress = 0;
+            let currentStep = 0;
+
+            container.style.display = 'block';
+            
+            const interval = setInterval(() => {
+                progress += Math.random() * 2;
+                if (progress > 100) progress = 100;
+                progressBar.style.width = `${progress}%`;
+
+                if (progress >= 25 && currentStep === 0) {
+                    steps[0].classList.add('completed');
+                    steps[1].classList.add('active');
+                    currentStep = 1;
+                } else if (progress >= 50 && currentStep === 1) {
+                    steps[1].classList.add('completed');
+                    steps[2].classList.add('active');
+                    currentStep = 2;
+                } else if (progress >= 75 && currentStep === 2) {
+                    steps[2].classList.add('completed');
+                    steps[3].classList.add('active');
+                    currentStep = 3;
+                }
+            }, 100);
+
+            window.loadingInterval = interval;
+        }
+
+        function stopLoadingAnimation() {
+            if (window.loadingInterval) {
+                clearInterval(window.loadingInterval);
+                window.loadingInterval = null;
+            }
+            document.getElementById('loadingContainer').style.display = 'none';
+            document.getElementById('progressBar').style.width = '0%';
+            document.querySelectorAll('.loading-step').forEach(step => {
+                step.classList.remove('active', 'completed');
+            });
+        }
+
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            70% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); }
         }
 
         // 支持回车键提交
