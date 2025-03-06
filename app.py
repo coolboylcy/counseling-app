@@ -3,7 +3,7 @@ import requests
 import os
 from dotenv import load_dotenv
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 load_dotenv()
 
 DEEPSEEK_API_KEY = os.getenv('DEEPSEEK_API_KEY', "sk-b225609809eb45da981394d494dafe3d")
