@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>智能文档分析助手</title>
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -93,9 +94,60 @@
         }
 
         .summary-content {
-            white-space: pre-wrap;
             line-height: 1.6;
             color: #2c3e50;
+        }
+
+        /* Markdown 样式 */
+        .summary-content h1,
+        .summary-content h2,
+        .summary-content h3,
+        .summary-content h4,
+        .summary-content h5,
+        .summary-content h6 {
+            color: #2c3e50;
+            margin: 1em 0 0.5em;
+            font-family: 'ZCOOL KuaiLe', cursive;
+        }
+
+        .summary-content h1 { font-size: 1.8em; }
+        .summary-content h2 { font-size: 1.5em; }
+        .summary-content h3 { font-size: 1.3em; }
+
+        .summary-content p {
+            margin: 0.8em 0;
+        }
+
+        .summary-content ul,
+        .summary-content ol {
+            margin: 0.8em 0;
+            padding-left: 2em;
+        }
+
+        .summary-content li {
+            margin: 0.3em 0;
+        }
+
+        .summary-content code {
+            background: #f1f1f1;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        .summary-content pre {
+            background: #f1f1f1;
+            padding: 1em;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 1em 0;
+        }
+
+        .summary-content blockquote {
+            border-left: 4px solid #3498db;
+            margin: 1em 0;
+            padding-left: 1em;
+            color: #666;
         }
 
         .loading {
@@ -162,6 +214,13 @@
         const documentInfo = document.getElementById('documentInfo');
         const summaryContent = document.getElementById('summaryContent');
 
+        // 配置 marked 选项
+        marked.setOptions({
+            breaks: true,  // 支持换行
+            gfm: true,     // 启用 GitHub 风格的 Markdown
+            sanitize: true // 清理 HTML 标签
+        });
+
         async function analyzeDocument() {
             const url = documentUrl.value.trim();
             if (!url) {
@@ -215,7 +274,8 @@
 
         function showResult(data) {
             documentInfo.textContent = `文档类型：${data.document_type}`;
-            summaryContent.textContent = data.summary;
+            // 使用 marked 渲染 Markdown
+            summaryContent.innerHTML = marked.parse(data.summary);
             resultSection.style.display = 'block';
         }
 
