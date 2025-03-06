@@ -304,6 +304,17 @@
             font-weight: 500;
         }
 
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            70% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        @keyframes popOut {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            100% { transform: translate(-50%, -50%) scale(0); }
+        }
+
         @media (max-width: 480px) {
             body {
                 padding: 20px 10px;
@@ -378,6 +389,7 @@
         const resultSection = document.getElementById('resultSection');
         const documentInfo = document.getElementById('documentInfo');
         const summaryContent = document.getElementById('summaryContent');
+        const loadingContainer = document.getElementById('loadingContainer');
 
         // 配置 marked 选项
         marked.setOptions({
@@ -401,6 +413,7 @@
             startLoadingAnimation();
 
             try {
+                console.log('Sending request to /analyze...');
                 const response = await fetch('/analyze', {
                     method: 'POST',
                     headers: {
@@ -409,15 +422,18 @@
                     body: JSON.stringify({ url }),
                 });
 
+                console.log('Response received:', response);
                 const data = await response.json();
+                console.log('Data:', data);
+
                 if (data.error) {
                     showError(data.error);
                 } else {
                     showResult(data);
                 }
             } catch (error) {
-                showError('分析过程中出现错误，请稍后重试');
                 console.error('Error:', error);
+                showError('分析过程中出现错误，请稍后重试');
             } finally {
                 hideLoading();
                 stopLoadingAnimation();
@@ -426,12 +442,12 @@
 
         function showLoading() {
             loading.style.display = 'block';
-            document.getElementById('loadingContainer').style.display = 'block';
+            loadingContainer.style.display = 'block';
         }
 
         function hideLoading() {
             loading.style.display = 'none';
-            document.getElementById('loadingContainer').style.display = 'none';
+            loadingContainer.style.display = 'none';
         }
 
         function showError(message) {
@@ -560,12 +576,6 @@
             document.querySelectorAll('.loading-step').forEach(step => {
                 step.classList.remove('active', 'completed');
             });
-        }
-
-        @keyframes popIn {
-            0% { transform: translate(-50%, -50%) scale(0); }
-            70% { transform: translate(-50%, -50%) scale(1.1); }
-            100% { transform: translate(-50%, -50%) scale(1); }
         }
 
         // 支持回车键提交
